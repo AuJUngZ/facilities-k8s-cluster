@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-loadbalancer-service
+  namespace: elk
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5601
+      targetPort: 5601
+  selector:
+    app: kibana
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-loadbalancer-service
+  namespace: monitoring
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000  # Since grafana not expose own port, we need to route to service ClusterIP to access the grafana at port 80
+  selector:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: prometheus

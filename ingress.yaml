@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-ingress-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: kibana-kibana.elk.svc.cluster.local
+  ports:
+    - port: 5601
+      targetPort: 5601
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-ingress-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: prometheus-grafana.monitoring.svc.cluster.local
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: ingress-nginx
+  annotations:
+    ubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: grafana-ingress-service
+            port:
+              number: 80
